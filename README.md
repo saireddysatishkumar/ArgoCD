@@ -14,4 +14,4 @@ kubectl port-forward svc/argocd-server 8010:8080 -n argocd
 
 ``````
 
-## 001-Project Manifests
+## 001-Project argocd Manifests
