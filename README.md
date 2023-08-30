@@ -48,23 +48,26 @@ This example demonstrates how to implement blue-green deployment via Argo Rollou
 - a. Install Argo Rollouts controller: https://github.com/argoproj/argo-rollouts#installation  
 ``````
 kubectl create namespace argo-rollouts
-kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml  
 ``````
+kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml   
+
 - b. Create a sample application and sync it.  
 ``````
 argocd app create --name blue-green --repo https://github.com/argoproj/argocd-example-apps --dest-server https://kubernetes.default.svc --dest-namespace default --path blue-green && argocd app sync blue-green
-Once the application is synced you can access it using blue-green-helm-guestbook service.
 ``````
+Once the application is synced you can access it using blue-green-helm-guestbook service.  
+
 - c. Change image version parameter to trigger blue-green deployment process:
 ``````
 argocd app set blue-green -p image.tag=0.2 && argocd app sync blue-green
-Now application runs ks-guestbook-demo:0.1 and ks-guestbook-demo:0.2 images simultaneously. The ks-guestbook-demo:0.2 is still considered blue available only via preview service blue-green-helm-guestbook-preview.
 ``````
+Now application runs ks-guestbook-demo:0.1 and ks-guestbook-demo:0.2 images simultaneously. The ks-guestbook-demo:0.2 is still considered blue available only via preview service blue-green-helm-guestbook-preview.  
+
 - d. Promote ks-guestbook-demo:0.2 to green by patching Rollout resource:
 ``````
 argocd app patch-resource blue-green --kind Rollout --resource-name blue-green-helm-guestbook --patch '{ "status": { "verifyingPreview": false } }' --patch-type 'application/merge-patch+json'
-This promotes ks-guestbook-demo:0.2 to green status and Rollout deletes old replica which runs ks-guestbook-demo:0.1.
 ``````
+This promotes ks-guestbook-demo:0.2 to green status and Rollout deletes old replica which runs ks-guestbook-demo:0.1.
 
 
 
